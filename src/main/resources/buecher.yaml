@@ -1,0 +1,310 @@
+openapi: 3.0.0
+
+info:
+  version: 0.0.1
+  title: BooksManagement
+  description: blank
+
+tags:
+  - name: "Library"
+
+paths:
+  /book:
+    post:
+      summary: Add a new book
+      tags:
+        - "Library"
+      description: Add a new book
+      operationId: addBook
+      requestBody:
+        description: Create a new book
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '405':
+          description: Invalid input
+    put:
+      tags:
+        - "Library"
+      summary: Update an existing book
+      description: Update an existing book by ISBN
+      operationId: updateBook
+      requestBody:
+        description: Update an existent book in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid ISBN supplied
+        '404':
+          description: Book not found
+        '405':
+          description: Validation exception
+    get:
+      tags:
+        - "Library"
+      summary: Get all books
+      description: Number of books to skip before returning results
+      operationId: getAllBooksInLibrary
+      responses:
+        "200":
+          description: Description
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+  /book/search:
+    get:
+      summary: Search books by keyword
+      description: Retrieve a list of books that match the given keyword
+      operationId: searchBooks
+      parameters:
+        - in: query
+          name: keyword
+          description: Keyword to search for
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: limit
+          description: Maximum number of books to return
+          required: false
+          schema:
+            type: integer
+            default: 15
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: offset
+          description: Number of books to skip before returning results
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            default: title
+        - in: query
+          name: sortOrder
+          schema:
+            type: string
+            default: asc
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+  /book/{isbn}:
+    get:
+      tags:
+        - "Library"
+      summary: Gets a book
+      description: get a book
+      operationId: getBookByISBN
+      parameters:
+        - name: isbn
+          in: path
+          description: Find Book by ISBN
+          required: true
+          schema:
+            type: string
+            minLength: 14
+            maxLength: 14
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid book value
+    delete:
+      tags:
+        - "Library"
+      summary: Deletes a book
+      description: delete a book
+      operationId: deleteBook
+      parameters:
+        - name: isbn
+          in: path
+          description: Book isbn to delete
+          required: true
+          schema:
+            type: string
+            minLength: 14
+            maxLength: 14
+      responses:
+        '400':
+          description: Invalid book value
+  /author:
+    post:
+      summary: Add a new author
+      tags:
+        - "Library"
+      description: Add a new author
+      operationId: addAuthor
+      requestBody:
+        description: Create a new author
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '405':
+          description: Invalid input
+    put:
+      tags:
+        - "Library"
+      summary: Update an existing author
+      description: Update an existing author by Id
+      operationId: updateAuthor
+      requestBody:
+        description: Update an existent author in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Author not found
+        '405':
+          description: Validation exception
+    get:
+      summary: This is a summary
+      tags:
+        - "Library"
+      description: Description
+      operationId: getAllAuthors
+      responses:
+        "200":
+          description: Description
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Author"
+  /author/{authorId}:
+    get:
+      tags:
+        - "Library"
+      summary: Find author by ID
+      description: Returns a single author
+      operationId: getAuthorById
+      parameters:
+        - name: authorId
+          in: path
+          description: ID of author to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Author not found
+    delete:
+      tags:
+        - "Library"
+      summary: Deletes a author
+      description: delete a author
+      operationId: deleteAuthor
+      parameters:
+        - name: authorId
+          in: path
+          description: Author id to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid book value
+
+components:
+  schemas:
+    Book:
+      description: Book
+      type: object
+      properties:
+        title:
+          description: Name of the book
+          type: string
+        author:
+          description: Name of the author
+          type: integer
+          minimum: 0
+        publishingYear:
+          description: Publishing year of the book
+          type: integer
+          minLength: 4
+          maxLength: 4
+        isbn:
+          description: ISBN of the book
+          type: string
+          minLength: 14
+          maxLength: 14
+    Author:
+      description: Author
+      type: object
+      properties:
+        author:
+          description: ID of the author
+          type: integer
+          minimum: 0
+        firstname:
+          description: Name of the author
+          type: string
+          maxLength: 25
+        lastname:
+          description: Name of the author
+          type: string
+          maxLength: 50

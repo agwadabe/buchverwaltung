@@ -2,6 +2,7 @@ package com.atrify.ausbildung.Buchverwaltung.Controller;
 
 import com.atrify.ausbildung.books_management.api.LibraryApi;
 import com.atrify.ausbildung.books_management.models.Author;
+import com.atrify.ausbildung.books_management.models.Book;
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,11 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
 
 //@Controller
@@ -51,7 +57,8 @@ public class AutorController implements LibraryApi {
 
   @Override
   public ResponseEntity<Void> deleteAuthor(Integer authorId) {
-    boolean deleteSuccessful = autorList.removeIf(authorDelete -> authorDelete.getAuthor().equals(authorId));
+    boolean deleteSuccessful = autorList.removeIf(
+        authorDelete -> authorDelete.getAuthor().equals(authorId));
     if (deleteSuccessful) {
       return new ResponseEntity(autorList, HttpStatus.OK);
     } else {
@@ -78,27 +85,38 @@ public class AutorController implements LibraryApi {
     return testAuthor;
   }
 
-  @GetMapping("/listAuthor")
-  public String listAuthor(Model model){
+  @RequestMapping(value = "/listAuthor", method = RequestMethod.GET)
+  public String listAuthor(Model model) {
 
-    autorList.add(getTestAuthor());
-    model.addAttribute("testAutoren", getTestAuthor());
-    ResponseEntity<List<Author>> allAuthorVar = getAllAuthors();
+    model.addAttribute("testAutoren", autorList);
 
-    model.addAttribute("authors", allAuthorVar);
+    model.addAttribute("authors", autorList);
 
     return "listAuthor";
 
   }
 
 
-  @GetMapping("/addAuthor")
+  @RequestMapping(value = "/addAuthor", method = RequestMethod.GET)
   public String addAuthor(Model model) {
     Author author2 = new Author();
     model.addAttribute("author", author2);
     return "addAuthor";
   }
 
+  @RequestMapping(value = "/add", method = RequestMethod.POST)
+  public String saveBook(@ModelAttribute(name = "author") Author author) {
+
+    ResponseEntity<Author> aL = addAuthor(author);
+    System.out.println(aL);
+    return "redirect:/listAuthor";
+  }
+
+  @RequestMapping(value = "/delete/{author}", method = RequestMethod.GET)
+  public String deleteAuthorFromLibary(@PathVariable Integer author) {
+    deleteAuthor(author);
+    return "redirect:/listAuthor";
+  }
 
 
 }

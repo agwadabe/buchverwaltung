@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -152,18 +153,9 @@ public class BuchController implements LibraryApi {
     return "redirect:/listBook";
   }
 
-  @RequestMapping(value = "/delete/{isbn}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/delete/{isbn}", method = RequestMethod.GET)
   public String deleteBookFromLibary(@PathVariable String isbn) {
     deleteBook(isbn);
-    return "redirect:/listBook";
-  }
-
-  @RequestMapping(value = "/edit", method = RequestMethod.POST)
-  public String editBook(Book book, Model model) {
-
-    System.out.println("/editbook");
-    updateBook(book);
-    model.addAttribute("book", book);
     return "redirect:/listBook";
   }
   @RequestMapping(value = "/edit/{isbn}", method = RequestMethod.GET)
@@ -172,9 +164,18 @@ public class BuchController implements LibraryApi {
     ResponseEntity<Book> book = getBookByISBN(isbn);
     Book bookBody = book.getBody();
     model.addAttribute("book", bookBody);
-
     return "editBook";
   }
+ @RequestMapping(value = "/edit", method = RequestMethod.PUT)
+  public String editBook(@ModelAttribute(name= "book") Book bookVar) {
+    //ResponseEntity<Book> bL = updateBook(getBookByISBN(isbn).getBody());
+    //System.out.println(bL);
+   ResponseEntity<Book> book = getBookByISBN(bookVar.getIsbn());
+   Book bookBody = book.getBody();
+   updateBook(bookBody);
+    return "redirect:/listBook";
+  }
+
 
   @Override
   public Optional<NativeWebRequest> getRequest() {

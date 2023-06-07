@@ -16,7 +16,7 @@
     <div class="card-body">
       <div th:switch="${authors}" class="container my-5">
         <p class="my-5">
-          <a href="addAuthor.html" class="btn btn-primary"><i
+          <a href="addAuthor" class="btn btn-primary"><i
               class="fas fa-user-plus ml-2"> Add Author</i></a>
         </p>
         <div class="col-md-10">
@@ -35,8 +35,8 @@
                 <td th:text="${testAutor.firstname}"></td>
                 <td th:text="${testAutor.lastname}"></td>
                 <td th:text="${testAutor.author}"></td>
-                <td><a th:href="@{'/testAutoren/edit/' + ${testAutor.author}}" class="btn btn-primary"><i class="fas fa-user-edit ml-2"></i></a></td>
-                <td><a th:href="@{'/testAutor/delete/' + ${testAutor.author}}" class="btn btn-primary"><i class="fas fa-user-times ml-2"></i></a></td>
+                <td><a th:href="@{'/edit/' + ${testAutor.author}}" class="btn btn-primary"><i class="fas fa-user-edit ml-2"></i></a></td>
+                <td><a th:href="@{'/delete/' + ${testAutor.author}}" class="btn btn-primary"><i class="fas fa-user-times ml-2"></i></a></td>
               </tr>
               </tbody>
             </table>

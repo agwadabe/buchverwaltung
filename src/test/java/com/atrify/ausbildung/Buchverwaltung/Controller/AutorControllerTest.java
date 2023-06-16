@@ -61,7 +61,6 @@ class AutorControllerTest {
       assertEquals(updatedAuthor.getFirstname(), updatedAuthorResponse.getFirstname());
       assertEquals(updatedAuthor.getLastname(), updatedAuthorResponse.getLastname());
     } else {
-      // Check if the author was not found in the library
       assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 class BuchControllerTest {
 
@@ -87,8 +89,26 @@ class BuchControllerTest {
   @Test
   void getAllBooksInLibrary() {
     BuchController bc = new BuchController();
-    Book book = new Book();
-    List<Book> books = (List<Book>) bc.getAllBooksInLibrary();
+    Book testBuchZwei = new Book();
+    testBuchZwei.setPublishingYear(2023);
+    testBuchZwei.setIsbn("002");
+    testBuchZwei.setTitle("Test Buch");
+    testBuchZwei.setAuthor(9990);
+    bc.addBook(testBuchZwei);
+
+    Book testBuch = new Book();
+    testBuch.setPublishingYear(2023);
+    testBuch.setIsbn("001");
+    testBuch.setTitle("Test Buch");
+    testBuch.setAuthor(999);
+    bc.addBook(testBuch);
+
+    ResponseEntity<List<Book>> response = bc.getAllBooksInLibrary();
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    List<Book> books = response.getBody();
     assertNotNull(books);
+    assertEquals(2, books.size());
+
   }
 }

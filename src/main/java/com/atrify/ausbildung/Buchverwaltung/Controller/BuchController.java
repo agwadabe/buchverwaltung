@@ -30,7 +30,7 @@ import java.util.Optional;
 import org.springframework.web.servlet.ModelAndView;
 import scala.xml.Null;
 
-@Controller
+//@Controller
 public class BuchController implements LibraryApi {
 
 

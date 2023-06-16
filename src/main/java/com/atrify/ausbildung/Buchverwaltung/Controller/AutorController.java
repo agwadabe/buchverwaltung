@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
 
-//@Controller
+@Controller
 public class AutorController implements LibraryApi {
 
   List<Author> autorList = new ArrayList<>();
@@ -68,12 +68,21 @@ public class AutorController implements LibraryApi {
 
   @Override
   public ResponseEntity<Author> getAuthorById(Integer authorId) {
-    return LibraryApi.super.getAuthorById(authorId);
+    for (Author authorupdate : autorList) {
+      if (authorupdate.getAuthor().equals(authorId)) {
+        return new ResponseEntity(authorupdate, HttpStatus.OK);
+      }
+
+    }
+    return new ResponseEntity(null, HttpStatus.NOT_FOUND);
   }
 
   @Override
   public ResponseEntity<List<Author>> getAllAuthors() {
-    return LibraryApi.super.getAllAuthors();
+    if (!autorList.isEmpty()) {
+      return new ResponseEntity(autorList, HttpStatus.OK);
+    }
+    return new ResponseEntity(autorList, HttpStatus.CONFLICT);
   }
 
   public Author getTestAuthor() {

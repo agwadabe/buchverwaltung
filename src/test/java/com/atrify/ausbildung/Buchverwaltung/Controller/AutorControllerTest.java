@@ -37,8 +37,34 @@ class AutorControllerTest {
 
   }
 
-  @Disabled
+  @Test
   void updateAuthor() {
+    AutorController ac = new AutorController();
+
+    Author existingAuthor = new Author();
+    existingAuthor.setFirstname("JK");
+    existingAuthor.setLastname("Rowling");
+    existingAuthor.setAuthor(1);
+    ac.addAuthor(existingAuthor);
+
+    Author updatedAuthor = new Author();
+    updatedAuthor.setFirstname("JK");
+    updatedAuthor.setLastname("Rowling");
+    updatedAuthor.setAuthor(1);
+
+    ResponseEntity<Author> response = ac.updateAuthor(updatedAuthor);
+
+    if (response.getStatusCode() == HttpStatus.OK) {
+      Author updatedAuthorResponse = response.getBody();
+      assertNotNull(updatedAuthorResponse);
+      assertEquals(updatedAuthor.getAuthor(), updatedAuthorResponse.getAuthor());
+      assertEquals(updatedAuthor.getFirstname(), updatedAuthorResponse.getFirstname());
+      assertEquals(updatedAuthor.getLastname(), updatedAuthorResponse.getLastname());
+    } else {
+      // Check if the author was not found in the library
+      assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
   }
 
   @Test

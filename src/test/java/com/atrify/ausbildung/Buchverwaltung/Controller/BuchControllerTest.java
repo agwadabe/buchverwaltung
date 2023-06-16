@@ -41,9 +41,38 @@ class BuchControllerTest {
 
   }
 
-  @Disabled
+  @Test
   void updateBook() {
+    BuchController bc = new BuchController();
+
+    Book existingBook = new Book();
+    existingBook.setPublishingYear(2023);
+    existingBook.setIsbn("001");
+    existingBook.setTitle("Test Buch");
+    existingBook.setAuthor(999);
+    bc.addBook(existingBook);
+
+    Book updatedBook = new Book();
+
+    updatedBook.setPublishingYear(2000);
+    updatedBook.setIsbn("001");
+    updatedBook.setTitle("Test Buch Neu");
+    updatedBook.setAuthor(999);
+
+    ResponseEntity<Book> response = bc.updateBook(updatedBook);
+
+    if (response.getStatusCode() == HttpStatus.OK) {
+      Book updatedBookResponse = response.getBody();
+      assertNotNull(updatedBookResponse);
+      assertEquals(updatedBook.getIsbn(), updatedBookResponse.getIsbn());
+      assertEquals(updatedBook.getTitle(), updatedBookResponse.getTitle());
+      assertEquals(updatedBook.getAuthor(), updatedBookResponse.getAuthor());
+      assertEquals(updatedBook.getPublishingYear(), updatedBookResponse.getPublishingYear());
+    } else {
+      assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
   }
+
 
   @Test
   void getBookByISBN() {

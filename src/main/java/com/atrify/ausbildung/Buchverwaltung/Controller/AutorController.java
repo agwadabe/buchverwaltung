@@ -49,10 +49,11 @@ public class AutorController implements LibraryApi {
         if (authorUpdate.getLastname() != null) {
           authorUpdate.setLastname(author.getLastname());
         }
-        return ResponseEntity.ok((Author) Arrays.asList(authorUpdate));
+        return ResponseEntity.ok (authorUpdate);
       }
     }
-    return LibraryApi.super.updateAuthor(author);
+    ResponseEntity<Author> authorVar = LibraryApi.super.updateAuthor(author);
+    return authorVar;
   }
 
   @Override

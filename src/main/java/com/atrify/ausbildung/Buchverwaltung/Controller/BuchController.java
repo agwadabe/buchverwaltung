@@ -66,10 +66,11 @@ public class BuchController implements LibraryApi {
         if (buchpdate.getPublishingYear() != null) {
           buchpdate.setPublishingYear(book.getPublishingYear());
         }
-        return ResponseEntity.ok((Book) Arrays.asList(buchpdate));
+        return ResponseEntity.ok (buchpdate);
       }
     }
-    return LibraryApi.super.updateBook(book);
+    ResponseEntity<Book> bookVar = LibraryApi.super.updateBook(book);
+    return bookVar;
   }
 
   @Override
@@ -166,7 +167,7 @@ public class BuchController implements LibraryApi {
     model.addAttribute("book", bookBody);
     return "editBook";
   }
- @RequestMapping(value = "/edit", method = RequestMethod.PUT)
+ @RequestMapping(value = "/editBook", method = RequestMethod.POST)
   public String editBook(@ModelAttribute(name= "book") Book bookVar) {
     //ResponseEntity<Book> bL = updateBook(getBookByISBN(isbn).getBody());
     //System.out.println(bL);

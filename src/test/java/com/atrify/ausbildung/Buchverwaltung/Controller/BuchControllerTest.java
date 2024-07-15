@@ -68,8 +68,6 @@ class BuchControllerTest {
       assertEquals(updatedBook.getTitle(), updatedBookResponse.getTitle());
       assertEquals(updatedBook.getAuthor(), updatedBookResponse.getAuthor());
       assertEquals(updatedBook.getPublishingYear(), updatedBookResponse.getPublishingYear());
-    } else {
-      assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
   }
 

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
 
-@Controller
+//@Controller
 public class AutorController implements LibraryApi {
 
   List<Author> autorList = new ArrayList<>();

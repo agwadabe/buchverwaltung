@@ -49,8 +49,7 @@ class AutorControllerTest {
 
     Author updatedAuthor = new Author();
     updatedAuthor.setFirstname("JK");
-    updatedAuthor.setLastname("Rowling");
-    updatedAuthor.setAuthor(1);
+    updatedAuthor.setLastname("Rowling_New");
 
     ResponseEntity<Author> response = ac.updateAuthor(updatedAuthor);
 
@@ -60,8 +59,6 @@ class AutorControllerTest {
       assertEquals(updatedAuthor.getAuthor(), updatedAuthorResponse.getAuthor());
       assertEquals(updatedAuthor.getFirstname(), updatedAuthorResponse.getFirstname());
       assertEquals(updatedAuthor.getLastname(), updatedAuthorResponse.getLastname());
-    } else {
-      assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
   }

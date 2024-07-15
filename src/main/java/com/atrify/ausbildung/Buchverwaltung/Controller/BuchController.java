@@ -6,12 +6,15 @@ import com.atrify.ausbildung.books_management.models.Book;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,12 +33,13 @@ import java.util.Optional;
 import org.springframework.web.servlet.ModelAndView;
 import scala.xml.Null;
 
-//@Controller
+
+@CrossOrigin(origins = "http://localhost:4200")
+@RestController
 public class BuchController implements LibraryApi {
 
 
   List<Book> buchList = new ArrayList<>();
-
 
   @Override
   public ResponseEntity<Book> addBook(Book book) {
@@ -48,7 +52,6 @@ public class BuchController implements LibraryApi {
     }
 
   }
-
   @Override
   public ResponseEntity<Book> updateBook(Book book) {
 
@@ -72,7 +75,6 @@ public class BuchController implements LibraryApi {
     ResponseEntity<Book> bookVar = LibraryApi.super.updateBook(book);
     return bookVar;
   }
-
   @Override
   public ResponseEntity<Book> getBookByISBN(String isbn) {
     for (Book buchupdate : buchList) {
@@ -84,7 +86,6 @@ public class BuchController implements LibraryApi {
     return new ResponseEntity(null, HttpStatus.NOT_FOUND);
     }
 
-
   @Override
   public ResponseEntity<Void> deleteBook(String isbn) {
     boolean deleteSuccessful = buchList.removeIf(buchDelete -> buchDelete.getIsbn().equals(isbn));
@@ -94,7 +95,6 @@ public class BuchController implements LibraryApi {
       return new ResponseEntity(buchList, HttpStatus.NOT_FOUND);
     }
   }
-
 
   @Override
   public ResponseEntity<List<Book>> getAllBooksInLibrary() {
@@ -124,8 +124,7 @@ public class BuchController implements LibraryApi {
     return testBuch;
   }
 
-
-  @GetMapping("/listBook")
+/*
   public String listBook(Model model) {
 
     model.addAttribute("testBuecher", buchList);
@@ -133,50 +132,48 @@ public class BuchController implements LibraryApi {
 
     model.addAttribute("books", buchList);
 
-    return "listBook";
+    return "";
 
   }
 
 
-  @GetMapping("/addBook")
   public String addBook(Model model) {
     Book book2 = new Book();
     model.addAttribute("book", book2);
-    return "addBook";
+    return "";
   }
 
 
-  @PostMapping("/add")
   public String saveBook(@ModelAttribute(name = "book") Book book) {
 
     ResponseEntity<Book> bL = addBook(book);
     System.out.println(bL);
-    return "redirect:/listBook";
+    return "";
   }
 
-  @RequestMapping(value = "/delete/{isbn}", method = RequestMethod.GET)
   public String deleteBookFromLibary(@PathVariable String isbn) {
     deleteBook(isbn);
-    return "redirect:/listBook";
+    return "";
   }
-  @RequestMapping(value = "/edit/{isbn}", method = RequestMethod.GET)
   public String editBookFromLibary(@PathVariable String isbn, Model model) {
     System.out.println("ISBN:" + isbn + "Hier"+isbn.getClass()+"Typ");
     ResponseEntity<Book> book = getBookByISBN(isbn);
     Book bookBody = book.getBody();
     model.addAttribute("book", bookBody);
-    return "editBook";
+    return "";
   }
- @RequestMapping(value = "/editBook", method = RequestMethod.POST)
+ // @PutMapping("/books/{isbn}")
   public String editBook(@ModelAttribute(name= "book") Book bookVar) {
     //ResponseEntity<Book> bL = updateBook(getBookByISBN(isbn).getBody());
     //System.out.println(bL);
    ResponseEntity<Book> book = getBookByISBN(bookVar.getIsbn());
    Book bookBody = book.getBody();
    updateBook(bookBody);
-    return "redirect:/listBook";
+    return "";
   }
 
+
+ */
 
   @Override
   public Optional<NativeWebRequest> getRequest() {

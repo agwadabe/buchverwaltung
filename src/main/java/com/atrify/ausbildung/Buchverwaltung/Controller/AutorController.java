@@ -2,88 +2,81 @@ package com.atrify.ausbildung.Buchverwaltung.Controller;
 
 import com.atrify.ausbildung.books_management.api.LibraryApi;
 import com.atrify.ausbildung.books_management.models.Author;
-import com.atrify.ausbildung.books_management.models.Book;
-import java.util.Arrays;
-import java.util.Optional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
-//@Controller
-public class AutorController implements LibraryApi {
 
-  List<Author> autorList = new ArrayList<>();
+@Controller
+public class AutorController {
 
-  @Override
-  public ResponseEntity<Author> addAuthor(Author author) {
+  private final List<Author> autorList = new ArrayList<>();
+
+  @PostMapping("/author")
+  public ResponseEntity<Author> addAuthor(@org.springframework.web.bind.annotation.RequestBody Author author) {
     if (!autorList.contains(author)) {
-
       autorList.add(author);
-      return new ResponseEntity(autorList, HttpStatus.OK);
+      return ResponseEntity.ok(author);
     } else {
-      return new ResponseEntity(autorList, HttpStatus.CONFLICT);
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
   }
 
-  @Override
-  public ResponseEntity<Author> updateAuthor(Author author) {
-    for (Author authorUpdate : autorList) {
-      if (authorUpdate.getAuthor().equals(author.getAuthor())) {
-        if (authorUpdate.getAuthor() != null) {
-          authorUpdate.setAuthor(author.getAuthor());
+  @PutMapping("/author")
+  public ResponseEntity<Author> updateAuthor(@org.springframework.web.bind.annotation.RequestBody Author author) {
+    for (Author existing : autorList) {
+      if (existing.getAuthor().equals(author.getAuthor())) {
+        if (author.getFirstname() != null) {
+          existing.setFirstname(author.getFirstname());
         }
-        if (authorUpdate.getFirstname() != null) {
-          authorUpdate.setFirstname(author.getFirstname());
+        if (author.getLastname() != null) {
+          existing.setLastname(author.getLastname());
         }
-        if (authorUpdate.getLastname() != null) {
-          authorUpdate.setLastname(author.getLastname());
-        }
-        return ResponseEntity.ok (authorUpdate);
+        return ResponseEntity.ok(existing);
       }
     }
-    ResponseEntity<Author> authorVar = LibraryApi.super.updateAuthor(author);
-    return authorVar;
+    return ResponseEntity.notFound().build();
   }
 
-  @Override
-  public ResponseEntity<Void> deleteAuthor(Integer authorId) {
+  @DeleteMapping("/author/{authorId}")
+  public ResponseEntity<Void> deleteAuthor(@PathVariable Integer authorId) {
     boolean deleteSuccessful = autorList.removeIf(
         authorDelete -> authorDelete.getAuthor().equals(authorId));
     if (deleteSuccessful) {
-      return new ResponseEntity(autorList, HttpStatus.OK);
+      return ResponseEntity.ok().build();
     } else {
-      return new ResponseEntity(autorList, HttpStatus.NOT_FOUND);
+      return ResponseEntity.notFound().build();
     }
   }
 
-  @Override
-  public ResponseEntity<Author> getAuthorById(Integer authorId) {
+  @GetMapping("/author/{authorId}")
+  public ResponseEntity<Author> getAuthorById(@PathVariable Integer authorId) {
     for (Author authorupdate : autorList) {
       if (authorupdate.getAuthor().equals(authorId)) {
-        return new ResponseEntity(authorupdate, HttpStatus.OK);
+        return ResponseEntity.ok(authorupdate);
       }
-
     }
-    return new ResponseEntity(null, HttpStatus.NOT_FOUND);
+    return ResponseEntity.notFound().build();
   }
 
-  @Override
+  @GetMapping("/api/authors")
   public ResponseEntity<List<Author>> getAllAuthors() {
-    if (!autorList.isEmpty()) {
-      return new ResponseEntity(autorList, HttpStatus.OK);
-    }
-    return new ResponseEntity(autorList, HttpStatus.CONFLICT);
+    return ResponseEntity.ok(autorList);
   }
 
   public Author getTestAuthor() {
@@ -114,8 +107,8 @@ public class AutorController implements LibraryApi {
     return "addAuthor";
   }
 
-  @RequestMapping(value = "/add", method = RequestMethod.POST)
-  public String saveBook(@ModelAttribute(name = "author") Author author) {
+  @RequestMapping(value = "/addAuthor", method = RequestMethod.POST)
+  public String saveAuthor(@ModelAttribute(name = "author") Author author) {
 
     ResponseEntity<Author> aL = addAuthor(author);
     System.out.println(aL);

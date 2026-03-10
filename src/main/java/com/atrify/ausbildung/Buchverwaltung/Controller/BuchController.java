@@ -1,107 +1,146 @@
 package com.atrify.ausbildung.Buchverwaltung.Controller;
 
-import com.atrify.ausbildung.books_management.api.LibraryApi;
-import com.atrify.ausbildung.books_management.models.Author;
 import com.atrify.ausbildung.books_management.models.Book;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.NativeWebRequest;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.web.servlet.ModelAndView;
-import scala.xml.Null;
+import org.springframework.web.context.request.NativeWebRequest; 
 
 
 @CrossOrigin(origins = "http://localhost:4200")
-@RestController
-public class BuchController implements LibraryApi {
+@Controller
+public class BuchController {
 
 
-  List<Book> buchList = new ArrayList<>();
 
-  @Override
-  public ResponseEntity<Book> addBook(Book book) {
-    if (!buchList.contains(book)) {
-
-      buchList.add(book);
-      return new ResponseEntity(buchList, HttpStatus.OK);
-    } else {
-      return new ResponseEntity(buchList, HttpStatus.CONFLICT);
-    }
-
+  @GetMapping("/listBook")
+  public String listBook(Model model) {
+    model.addAttribute("testBuecher", buchList);
+    model.addAttribute("books", buchList);
+    return "listBook";
   }
-  @Override
-  public ResponseEntity<Book> updateBook(Book book) {
 
-    for (Book buchpdate : buchList) {
-      if (buchpdate.getIsbn().equals(book.getIsbn())) {
-        if (buchpdate.getIsbn() != null) {
-          buchpdate.setIsbn(book.getIsbn());
+  @RequestMapping(value = "/addBook", method = RequestMethod.GET)
+  public String addBook(Model model) {
+    Book book2 = new Book();
+    model.addAttribute("book", book2);
+    return "addBook";
+  }
+
+  @RequestMapping(value = "/add", method = RequestMethod.POST)
+  public String saveBook(@ModelAttribute(name = "book") Book book) {
+    addBook(book); 
+    return "redirect:/listBook";
+  }
+
+  @RequestMapping(value = "/delete/{isbn}", method = RequestMethod.GET)
+  public String deleteBookFromLibary(@PathVariable String isbn) {
+    deleteBook(isbn);
+    return "redirect:/listBook";
+  }
+
+  @RequestMapping(value = "/edit/{isbn}", method = RequestMethod.GET)
+  public String editBookFromLibary(@PathVariable String isbn, Model model) {
+    ResponseEntity<Book> book = getBookByISBN(isbn);
+    Book bookBody = book.getBody();
+    model.addAttribute("book", bookBody);
+    return "editBook";
+  }
+
+  @RequestMapping(value = "/edit", method = RequestMethod.POST)
+  public String editBook(@ModelAttribute(name = "book") Book bookVar) {
+    updateBook(bookVar);
+    return "redirect:/listBook";
+  }
+
+
+
+  private final List<Book> buchList = new ArrayList<>();
+
+  public BuchController() {
+    buchList.add(getTestBook());
+    buchList.add(getTestBookZwei());
+  }
+
+
+  public void clearLibrary() {
+    buchList.clear();
+  }
+
+  @PostMapping("/book")
+  public ResponseEntity<Book> addBook(@org.springframework.web.bind.annotation.RequestBody Book book) {
+    if (!buchList.contains(book)) {
+      buchList.add(book);
+      return ResponseEntity.ok(book);
+    } else {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+  }
+  @PutMapping("/book")
+  public ResponseEntity<Book> updateBook(@org.springframework.web.bind.annotation.RequestBody Book book) {
+    for (Book existing : buchList) {
+      if (existing.getIsbn().equals(book.getIsbn())) {
+        
+        if (book.getIsbn() != null) {
+          existing.setIsbn(book.getIsbn());
         }
-        if (buchpdate.getTitle() != null) {
-          buchpdate.setTitle(book.getTitle());
+        if (book.getTitle() != null) {
+          existing.setTitle(book.getTitle());
         }
-        if (buchpdate.getAuthor() != null) {
-          buchpdate.setAuthor(book.getAuthor());
+        if (book.getAuthor() != null) {
+          existing.setAuthor(book.getAuthor());
         }
-        if (buchpdate.getPublishingYear() != null) {
-          buchpdate.setPublishingYear(book.getPublishingYear());
+        if (book.getPublishingYear() != null) {
+          existing.setPublishingYear(book.getPublishingYear());
         }
-        return ResponseEntity.ok (buchpdate);
+        return ResponseEntity.ok(existing);
       }
     }
-    ResponseEntity<Book> bookVar = LibraryApi.super.updateBook(book);
-    return bookVar;
+    return ResponseEntity.notFound().build();
   }
-  @Override
-  public ResponseEntity<Book> getBookByISBN(String isbn) {
+  @GetMapping("/book/{isbn}")
+  public ResponseEntity<Book> getBookByISBN(@PathVariable String isbn) {
     for (Book buchupdate : buchList) {
       if (buchupdate.getIsbn().equals(isbn)) {
-        return new ResponseEntity(buchupdate, HttpStatus.OK);
+        return ResponseEntity.ok(buchupdate);
       }
-
-      }
-    return new ResponseEntity(null, HttpStatus.NOT_FOUND);
     }
+    return ResponseEntity.notFound().build();
+  }
 
-  @Override
-  public ResponseEntity<Void> deleteBook(String isbn) {
+  @DeleteMapping("/book/{isbn}")
+  public ResponseEntity<Void> deleteBook(@PathVariable String isbn) {
     boolean deleteSuccessful = buchList.removeIf(buchDelete -> buchDelete.getIsbn().equals(isbn));
     if (deleteSuccessful) {
-      return new ResponseEntity(buchList, HttpStatus.OK);
+      return ResponseEntity.ok().build();
     } else {
-      return new ResponseEntity(buchList, HttpStatus.NOT_FOUND);
+      return ResponseEntity.notFound().build();
     }
   }
 
-  @Override
+  @GetMapping("/api/books")
   public ResponseEntity<List<Book>> getAllBooksInLibrary() {
-    if (!buchList.isEmpty()) {
-      return new ResponseEntity(buchList, HttpStatus.OK);
-    }
-    return new ResponseEntity(buchList, HttpStatus.CONFLICT);
+    return ResponseEntity.ok(buchList);
+  }
+
+  @GetMapping("/")
+  public String home(Model model) {
+    model.addAttribute("books", buchList);
+    return "listBook";
   }
 
   public Book getTestBook() {
@@ -117,68 +156,15 @@ public class BuchController implements LibraryApi {
   public Book getTestBookZwei() {
     Book testBuch = new Book();
     testBuch.setPublishingYear(2023);
-    testBuch.setIsbn("001");
+    testBuch.setIsbn("002");              
     testBuch.setTitle("Test Buch");
     testBuch.setAuthor(9990);
 
     return testBuch;
   }
 
-/*
-  public String listBook(Model model) {
-
-    model.addAttribute("testBuecher", buchList);
-    //  ResponseEntity<List<Book>> allBooksVar = getAllBooksInLibrary();
-
-    model.addAttribute("books", buchList);
-
-    return "";
-
-  }
 
 
-  public String addBook(Model model) {
-    Book book2 = new Book();
-    model.addAttribute("book", book2);
-    return "";
-  }
-
-
-  public String saveBook(@ModelAttribute(name = "book") Book book) {
-
-    ResponseEntity<Book> bL = addBook(book);
-    System.out.println(bL);
-    return "";
-  }
-
-  public String deleteBookFromLibary(@PathVariable String isbn) {
-    deleteBook(isbn);
-    return "";
-  }
-  public String editBookFromLibary(@PathVariable String isbn, Model model) {
-    System.out.println("ISBN:" + isbn + "Hier"+isbn.getClass()+"Typ");
-    ResponseEntity<Book> book = getBookByISBN(isbn);
-    Book bookBody = book.getBody();
-    model.addAttribute("book", bookBody);
-    return "";
-  }
- // @PutMapping("/books/{isbn}")
-  public String editBook(@ModelAttribute(name= "book") Book bookVar) {
-    //ResponseEntity<Book> bL = updateBook(getBookByISBN(isbn).getBody());
-    //System.out.println(bL);
-   ResponseEntity<Book> book = getBookByISBN(bookVar.getIsbn());
-   Book bookBody = book.getBody();
-   updateBook(bookBody);
-    return "";
-  }
-
-
- */
-
-  @Override
-  public Optional<NativeWebRequest> getRequest() {
-    return LibraryApi.super.getRequest();
-  }
 
 
 }

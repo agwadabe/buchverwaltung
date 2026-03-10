@@ -15,6 +15,7 @@ class BuchControllerTest {
   @Test
   void addBook() {
     BuchController bc = new BuchController();
+    bc.clearLibrary(); // remove default entries created by ctor
     List<Book> buchList = new ArrayList<>();
 
 
@@ -44,6 +45,7 @@ class BuchControllerTest {
   @Test
   void updateBook() {
     BuchController bc = new BuchController();
+    bc.clearLibrary();
 
     Book existingBook = new Book();
     existingBook.setPublishingYear(2023);
@@ -75,6 +77,7 @@ class BuchControllerTest {
   @Test
   void getBookByISBN() {
     BuchController bc = new BuchController();
+    bc.clearLibrary();
     String isbn = "12345678901234";
     Book book = new Book();
     book.setIsbn(isbn);
@@ -90,6 +93,7 @@ class BuchControllerTest {
   @Test
   void deleteBook() {
     BuchController bc = new BuchController();
+    bc.clearLibrary();
     List<Book> buchList = new ArrayList<>();
 
     Book testBuch = new Book();
@@ -116,6 +120,7 @@ class BuchControllerTest {
   @Test
   void getAllBooksInLibrary() {
     BuchController bc = new BuchController();
+    bc.clearLibrary();
     Book testBuchZwei = new Book();
     testBuchZwei.setPublishingYear(2023);
     testBuchZwei.setIsbn("002");

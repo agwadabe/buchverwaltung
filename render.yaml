@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: buchverwaltung
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    autoDeployTrigger: commit
+    envVars:
+      - key: PORT
+        value: 10000
